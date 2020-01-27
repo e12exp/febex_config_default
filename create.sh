@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname $0)
 echo "Running create.sh to create config/febex.db from text files"
 if test "$1" == "--update"
 then
@@ -17,7 +18,6 @@ fi
 git branch | grep $HOSTNAME || git checkout -b $HOSTNAME
 git checkout $HOSTNAME 2>&1 | grep -v already
 DB=febex.db
-cd $(dirname $0)
 
 rm -f *.out
 ../setpar --empty $DB batchfile febex.h || exit $?
