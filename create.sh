@@ -68,6 +68,6 @@ MSG="create.sh: created $DB on $HOSTNAME with modules=[$CONFIG]. $STAT"
 echo "Commiting with $MSG"
 test -n "$COPIED" && EMPTYOK="--allow-empty"
 git commit $EMPTYOK -m "$MSG"
-git show -q | grep ^commit > febex.db.commit
+git show  | grep ^commit > febex.db.commit
 test -n "$COPIED" && cp febex.db.commit ..
 
