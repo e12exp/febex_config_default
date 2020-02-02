@@ -20,7 +20,17 @@ git checkout $HOSTNAME 2>&1 | grep -v already
 DB=febex.db
 
 rm -f *.out
-../setpar --empty $DB batchfile febex.h || exit $?
+
+# The C preprocessor can not paste tokens like 0.1 and .*.discr_foo together
+# without inserting white spaces.
+# Thus, we use an explicit sed to remove the blanks before and after any dot.
+
+g++ -x c++-header -E febex.h \
+    | sed -e 's/ *[.] */./g' \
+    | ../setpar --empty $DB batchfile -
+RES="${PIPESTATUS[@]}"
+test "$RES" == "0 0 0"\
+    || { echo "Main setpar call failed with $RES exiting." ;  exit $? ; }
 
 for i in list slist tlist
 do
@@ -39,7 +49,7 @@ git add *.h
 OLDCOMMIT=$(cat ../febex.db.commit)
 if ! diff febex.db ../febex.db  &>/dev/null
 then
-	echo "*******************************************************************"
+    echo "*******************************************************************"
     if test -n "$UPDATE" || ! test -f ../febex.db
     then
 	if test -f ../febex.db
@@ -58,7 +68,7 @@ then
 	echo "Please consider updating to the the version."
 	echo STAT="KEPT OLD mbs/febex.db ($OLDCOMMIT)"
     fi
-	echo "*******************************************************************"
+    echo "*******************************************************************"
 else
     echo "mbs/febex.db is up to date with text files."
     STAT="No functional changes from $OLDCOMMIT"
